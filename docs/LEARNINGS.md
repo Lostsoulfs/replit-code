@@ -8,6 +8,27 @@ something.** Include the date and enough context to be useful later.
 
 ## 2026-06-02
 
+- **Stacked-PR merge mechanics (operational, web-confirmed).** PR #2 was stacked
+  on the visual-demo PR #1 (base = `fast-visual-demo`, not `main`). Lessons:
+  (1) **Merge the lowest PR with a MERGE COMMIT, never squash/rebase** — squashing
+  the base rewrites its SHAs and the upper PR's diff explodes / orphans. The TOP
+  PR _can_ safely squash (nothing is stacked above it). (2) GitHub only
+  auto-retargets the next PR to `main` if the merged head branch is **deleted**;
+  our merge didn't delete it, so we **manually retargeted #2 → main**, which is
+  safe _after_ #1 lands (the demo's commits are already in main's history → no
+  explosion) but would explode the diff _before_. (3) The **CI drift-audit pushes
+  its own `audit: auto-fix` commit** to the PR branch — so after a push, expect a
+  non-fast-forward on the next push: `git fetch` + `rebase`, and **pre-run
+  prettier locally** to avoid triggering yet another auto-fix commit.
+
+- **Decision protocol adopted (Working Agreement #7).** Operator decisions now
+  offer a "research it" option (web search + audit + 3–6 expert MoE that argue +
+  rebut, time-boxed). MoE/research is **advisory only — the operator always makes
+  the final call**, and may re-run via other LLMs. The visual-demo PR #1 was
+  landed to `main` only after a review gate (CI green + `audit-drive` showed no
+  deep nesting + no secrets; its one "high" audit finding was a false positive —
+  the regex matched the auditor's own documentation text).
+
 - **Code-quality gate, not just correctness (Sonar "AI code quality" finding).**
   Functional pass-rate ≠ maintainability: AI tends to bloat and over-nest code
   even when tests pass. Response — encode the rule as a _gate_ (I can't reliably
