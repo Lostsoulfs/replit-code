@@ -13,7 +13,7 @@ something.** Include the date and enough context to be useful later.
   posts via the built-in `GITHUB_TOKEN` and applies only safe auto-fixes
   (prettier / eslint --fix). Semantic claim-vs-code review is done by the
   in-session auditor (runs on the session, also free). The paid Anthropic API
-  was only ever needed for semantic checks *in CI* — skipped. See
+  was only ever needed for semantic checks _in CI_ — skipped. See
   `docs/DRIFT-AUDIT.md`. GitHub Actions pushes made with `GITHUB_TOKEN` do not
   retrigger workflows, so the auto-fix commit can't cause an audit loop. Fork
   PRs get a read-only token, so the job is gated to same-repo PRs.
