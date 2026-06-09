@@ -191,3 +191,9 @@ demo:recurrence`). Pure logic, no Pixi — see ADR-0012. The
   treated as self-modification and is blocked unless the user explicitly
   authorizes it / adds the permission rule themselves. The hook _script_ can be
   created freely; only the settings registration needs user action.
+
+## 2026-06-09 - core rule pack refresh
+
+- Refreshed repo rules from the cross-repo core pack: strict verification/security from Inbound-health-care/Health-Prototype plus the lighter practical working agreement from Lostsoulfs/My-sons-game.
+- Replaced older generic agent/security wording in AGENTS.md, CLAUDE.md, and SECURITY.md for this repo-specific rollout.
+- Rollout branch/commit target: $branch.
