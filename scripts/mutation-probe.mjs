@@ -91,14 +91,27 @@ const MUTATIONS = [
 function makeTemp() {
   const dir = mkdtempSync(join(tmpdir(), 'slot-mut-'));
   for (const item of COPY) cpSync(join(REPO, item), join(dir, item), { recursive: true });
-  symlinkSync(join(REPO, 'node_modules'), join(dir, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
+  symlinkSync(
+    join(REPO, 'node_modules'),
+    join(dir, 'node_modules'),
+    process.platform === 'win32' ? 'junction' : 'dir',
+  );
   return dir;
 }
 
 function runSuite(dir) {
   const bin = join(dir, 'node_modules', 'vitest', 'vitest.mjs');
-  const res = spawnSync(process.execPath, [bin, 'run'], { cwd: dir, encoding: 'utf8', timeout: 180000 });
-  return { status: res.status, stdout: res.stdout || '', stderr: res.stderr || '', error: res.error };
+  const res = spawnSync(process.execPath, [bin, 'run'], {
+    cwd: dir,
+    encoding: 'utf8',
+    timeout: 180000,
+  });
+  return {
+    status: res.status,
+    stdout: res.stdout || '',
+    stderr: res.stderr || '',
+    error: res.error,
+  };
 }
 
 function run() {

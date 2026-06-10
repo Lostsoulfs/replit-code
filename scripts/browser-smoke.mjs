@@ -6,7 +6,10 @@ const artifactDir = 'artifacts/playwright';
 await mkdir(artifactDir, { recursive: true });
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 800, height: 1000 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({
+  viewport: { width: 800, height: 1000 },
+  deviceScaleFactor: 1,
+});
 const errors = [];
 page.on('console', (message) => {
   if (message.type() === 'error') errors.push(message.text());
@@ -22,8 +25,13 @@ try {
   if (errors.length) throw new Error(errors.slice(0, 5).join(' | '));
   await page.context().tracing.stop({ path: `${artifactDir}/trace.zip` });
 } catch (error) {
-  await page.screenshot({ path: `${artifactDir}/smoke-failure.png`, fullPage: true }).catch(() => {});
-  await page.context().tracing.stop({ path: `${artifactDir}/trace.zip` }).catch(() => {});
+  await page
+    .screenshot({ path: `${artifactDir}/smoke-failure.png`, fullPage: true })
+    .catch(() => {});
+  await page
+    .context()
+    .tracing.stop({ path: `${artifactDir}/trace.zip` })
+    .catch(() => {});
   throw error;
 } finally {
   await browser.close();
