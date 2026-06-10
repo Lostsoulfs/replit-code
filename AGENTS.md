@@ -37,7 +37,7 @@ npm run demo:recurrence  # print the recurrence engine's report (see ADR-0012)
 
 ## Project structure
 
-- **Stack:** PixiJS v8 (WebGL) + pixi-filters, Vite 6, vanilla ES modules (no
+- **Stack:** PixiJS v8 (WebGL) + pixi-filters, Vite 8, vanilla ES modules (no
   TypeScript). WebAudio for SFX. lil-gui + stats.js for the debug panel.
 - **`src/`** — `main.js` (boot + game-state machine), `reels.js` (reel engine),
   `symbols.js` (procedural textures), `wins.js` (payline eval), `outcome.js`
