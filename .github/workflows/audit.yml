@@ -33,7 +33,8 @@ jobs:
       - name: Run drift audit (with safe auto-fix)
         env:
           GITHUB_PR_BODY: ${{ github.event.pull_request.body }}
-        run: node scripts/audit-drift.mjs --base "origin/${{ github.base_ref }}" --head HEAD --fix --run-checks
+          BASE_REF: ${{ github.base_ref }} # via env, not inline, to avoid template injection
+        run: node scripts/audit-drift.mjs --base "origin/${BASE_REF}" --head HEAD --fix --run-checks
 
       - name: Commit & push auto-fixes (if any)
         run: |
