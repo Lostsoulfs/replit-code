@@ -8,12 +8,24 @@ something.** Include the date and enough context to be useful later.
 
 ## 2026-06-10
 
+- **Drift audit of PR #12 (in-session auditor):** deterministic pass clean
+  (lint/build green, `src/` net +0, 79/79 tests); claims verified against the
+  ground truth (`44bfd28` lockfile: vite 6.4.2→8.0.16, playwright
+  1.56.1→1.60.0; PR #1/#2 both merged 2026-06-02). One phantom claim found and
+  fixed: this pass originally called `claude/fast-visual-demo-GV6wC`
+  "long-deleted," but `git ls-remote` shows the branch still exists (head
+  `29a73fb`, merged into main, never deleted — as the 2026-06-02 entry itself
+  says). Doc wording corrected; the same claim in commit `7857994`'s message
+  stays as-is (pushed history). Lesson: verify "deleted" with `ls-remote`, not
+  from memory.
 - **Doc/CI currency pass (drift cleanup).** Fixed stale claims found by an audit:
   `AGENTS.md` said "Vite 6" but the repo has been on Vite 8 since the Dependabot
   major bump (`44bfd28`, 2026-06-02 — 6.4.2 → 8.0.16, no config changes needed);
   `SECURITY.md` said Dependabot was "weekly" but `.github/dependabot.yml` is
-  monthly; `deploy.yml` still triggered on the long-deleted
-  `claude/fast-visual-demo-GV6wC` branch. Lesson: version/cadence claims in prose
+  monthly; `deploy.yml` still triggered on the stale
+  `claude/fast-visual-demo-GV6wC` branch (PR #1's head — fully merged into
+  main but never deleted; the 2026-06-02 stacked-PR entry below records that
+  the merge kept it). Lesson: version/cadence claims in prose
   rot silently — prefer pointing at the source file (`package.json`,
   `dependabot.yml`) over restating numbers.
 - **CHANGELOG hygiene:** everything that sat in `[Unreleased]` had actually
