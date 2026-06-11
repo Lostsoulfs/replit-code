@@ -8,6 +8,41 @@ something.** Include the date and enough context to be useful later.
 
 ## 2026-06-11
 
+- **Spokey horror theme + Settings/Paytable + ambient dread (PR 1 of 2).** Added
+  a 5th `spokey` theme preset (dark-but-colorful) with cabinet chrome, a
+  player-facing Settings panel (volume slider + mute + theme picker, persisted),
+  a Paytable modal, and a procedural ambient dread bed — all VISUAL/AUDIO only,
+  zero money/math touched (RTP pin `0.96081525` byte-identical; mutation 100%).
+  Gotchas worth keeping:
+  - **`applyTheme` is narrower than its name** — it repaints only the bg
+    gradient + godrays + reel frame/glow. UI title, jackpot ladder, and corner
+    readouts read `COLORS` ONCE at build and never repaint. New themed chrome
+    (cabinet, fog) needs its OWN repaint hook; we route it all through
+    `applyTheme` so debug- and player-triggered switches behave identically.
+  - **Jackpot ladder chips don't recolor with the theme** (fixed
+    `JACKPOTS[kind].color`) — true for every theme, just more visible under
+    spokey's dark palette. Left as a follow-up, not a regression.
+  - **Bottom-center is owned by the big SPIN button** — a centered cabinet LED
+    strip collided with it and the bet cluster. Moved CREDITS/WIN to the bottom
+    CORNERS (the HUD's own readout spots, proven clear of controls) and hid the
+    default corner text under spokey. Lesson: reuse the layout slots the HUD
+    already proved safe instead of inventing new ones in a crowded row.
+  - **Pixi v8 slider needs `root.toLocal(e.global)`** — the game lives in a
+    letterbox-scaled `world`, so raw window pixels make the knob jump. Map
+    pointer coords through the container.
+  - **`localStorage` is greenfield** — centralized in one Pixi-free `persist.js`
+    (try/catch, degrades to defaults in private mode) so the render/pure
+    firewall holds and it stays unit-testable (`test/persist.test.js`).
+  - **Audio channel graph**: SFX + ambience now sit on separate sub-gains under
+    a master so the dread bed can swell during the bonus independently; mute is
+    master=0, volume restores. Bonus-gated unease (`src/unease.js`) decorates
+    the Hold & Win animation timeline ONLY — it never reads/writes the ledger
+    (the money seam stays load-bearing; the 12M RTP pin is the canary).
+  - **verify.mjs browser**: the full Chrome build auto-requests `/favicon.ico`
+    (404 → a console error that fails the smoke); CI's headless shell doesn't.
+    Added an optional `PW_CHROMIUM` executablePath override for local runs when
+    the pinned browser can't be downloaded (restricted network) — unset in CI,
+    so default behavior is unchanged.
 - **ADR-0017 — the audit loop got memory and a propose-only self-tuning path.**
   Trigger: Scott caught a mid-task tactic change that lived only in agent
   _thinking_ — never surfaced, lesson lost. Three additions, all gated: (1)
