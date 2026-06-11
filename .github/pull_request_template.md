@@ -41,6 +41,7 @@
 - [ ] `npm test` passes
 - [ ] `npm run lint` clean
 - [ ] `npm run build` succeeds
+- [ ] `npm run mutation` passes (payout-logic probe — run it, not just `npm test`; CI gates on it)
 - [ ] Smoke test (`node verify.mjs`) — if behavior/render changed
 - [ ] RTP/math changes have proof tests
 - [ ] Reviewer checked silent-failure risk
