@@ -275,12 +275,16 @@ import { tween, wait, Ease } from './utils.js';
     // ask the registry which feature fired. defaultModel() is snapshotted
     // per spin so live debug-slider edits to config keep applying, exactly
     // like the old direct BONUS.triggerCount read.
-    const triggered = findTriggered(res.coinCells, defaultModel());
+    const triggered = findTriggered({ grid, cells: res.coinCells }, defaultModel());
     if (triggered) {
-      const won = await featureRenderers[triggered.feature.id].run(
-        triggered.payload.cells,
-        state.bet,
-      );
+      const renderer = featureRenderers[triggered.feature.id];
+      if (!renderer) {
+        // loud dev aid: a feature was registered without a renderer-map entry
+        throw new Error(
+          `feature "${triggered.feature.id}" triggered but has no entry in featureRenderers`,
+        );
+      }
+      const won = await renderer.run(triggered.payload.cells, state.bet);
       state.balance += won;
       ui.setBalance(state.balance);
       ui.setWin(won);

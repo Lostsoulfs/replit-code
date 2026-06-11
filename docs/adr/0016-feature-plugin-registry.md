@@ -18,13 +18,18 @@ extraction yet, per the operator's scoping).
 
 ## Decision
 
-1. **A feature is a pure descriptor:** `{ id, checkTrigger(cells, model),
+1. **A feature is a pure descriptor:** `{ id, checkTrigger(spin, model),
 play(triggerCells, model, rng) }`. No Pixi, no globals, rng injected.
    `features/holdAndWin.js` exports `holdAndWinFeature` — the first plug-in.
-2. **`checkTrigger` is the ONE trigger rule.** It consumes no rng, only
-   counts cells, and passes the same array through as the bonus seed. The
-   live orchestrator reaches it via the registry; the math harness imports
-   it directly — both run the identical rule.
+2. **`checkTrigger` receives the whole spin envelope** — `spin = { grid,
+cells }`: the full settled `grid[reel][row]` (canonical — a feature may
+   trigger on ANYTHING in it, not just the bonus symbol) plus the
+   precomputed bonus-symbol `cells` convenience (flat indices from the
+   harness, `{reel,row}` from the live `evaluate()`; a custom feature
+   should derive positions from `grid`, the representation both sides
+   share). It is the ONE trigger rule: no rng, and the live orchestrator
+   (via the registry) and the math harness (direct import) run the
+   identical function.
 3. **`src/features/registry.js`** holds registration (`registerFeature` with
    loud validation: id/shape/duplicates), lookup, and `findTriggered(cells,
 model)` (registration order = priority). The game self-registers

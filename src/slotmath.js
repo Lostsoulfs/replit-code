@@ -279,7 +279,7 @@ export function monteCarloFullGame(
     for (let i = 0; i < cellCount; i++) if (flat[i] === model.bonusSymbol) coinCells.push(i);
     let bonusPayout = 0;
     // same trigger rule the live game uses (features/holdAndWin.js)
-    const triggered = checkTrigger(coinCells, model);
+    const triggered = checkTrigger({ grid, cells: coinCells }, model);
     if (triggered) {
       bonusTriggers++;
       const res = simulateBonus(triggered.cells, model, rng);

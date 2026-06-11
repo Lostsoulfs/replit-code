@@ -9,12 +9,14 @@
 // =====================================================================
 
 // Trigger rule (the ONE source of truth — the live orchestrator and the
-// math harness both call this): the feature fires when triggerCount+ of
-// its trigger symbol landed. `cells` may be flat indices (math) or
-// {reel,row} objects (live evaluate()); only the count matters here and
-// the same array is passed through as the bonus seed. No rng consumed.
-export function checkTrigger(cells, model) {
-  return cells.length >= model.bonus.triggerCount ? { cells } : null;
+// math harness both call this). Contract: `spin = { grid, cells }` where
+// `grid[reel][row]` is the full settled grid (canonical — a feature may
+// trigger on ANYTHING in it) and `cells` is the precomputed bonus-symbol
+// cells convenience (flat indices from the math harness, {reel,row} from
+// the live evaluate(); only the count is used here and the same array is
+// passed through as the bonus seed). No rng consumed.
+export function checkTrigger(spin, model) {
+  return spin.cells.length >= model.bonus.triggerCount ? { cells: spin.cells } : null;
 }
 
 // Decide one coin: a small chance of a jackpot coin, otherwise a weighted

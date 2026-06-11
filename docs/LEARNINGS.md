@@ -8,6 +8,25 @@ something.** Include the date and enough context to be useful later.
 
 ## 2026-06-11
 
+- **#19 audit fold-ins (Scott-gated audit, per the new CLAUDE.md gate).** The
+  deep audit found the registry's trigger input was secretly coin-shaped —
+  `checkTrigger(cells)` looked general but the orchestrator only fed it
+  `res.coinCells`, so a feature triggering on anything else couldn't be a
+  plug-in. Widened the contract BEFORE a second feature exists (cheapest
+  moment): `checkTrigger(spin, model)` with `spin = { grid, cells }` — grid is
+  canonical (shared shape both sides), cells stays the bonus-symbol
+  convenience (representations differ: flat vs {reel,row}; custom features
+  must derive from grid). Also: loud missing-renderer guard in main.js
+  (register-without-map-entry is the obvious feature-#2 mistake); committed
+  `test/bonusMoney.test.js` (renderer money arithmetic ≡ feature ledger, 2000
+  seeded rounds — was a throwaway check in #17, now a permanent pin); and the
+  **smoke test finally runs somewhere**: new `smoke` job in ci.yml (chromium
+  only via `npx playwright install chromium --with-deps`, vite preview +
+  curl-wait, verify.mjs gates with exit code, screenshots uploaded as
+  artifacts) — closing the "render path has no executable check anywhere"
+  finding from the #18 audit. Lesson worth keeping: **a contract is what you
+  feed it, not what you name it** — the registry pattern was easy, the real
+  coupling hid in the argument.
 - **Phase 2/PR B — feature-plugin registry (ADR-0016); Hold & Win is plug-in #1.**
   The last hardcoded feature coupling is gone: `main.js` no longer inlines the
   trigger rule or names `BonusGame` in the branch — it asks

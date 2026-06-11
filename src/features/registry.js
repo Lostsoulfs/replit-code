@@ -1,8 +1,10 @@
 // =====================================================================
 // registry.js — the pluggable-feature seam (ADR-0016).
 //
-// A feature is a PURE descriptor: { id, checkTrigger(cells, model),
-// play(triggerCells, model, rng) } — no Pixi, no globals, rng injected
+// A feature is a PURE descriptor: { id, checkTrigger(spin, model),
+// play(triggerCells, model, rng) } — no Pixi, no globals, rng injected.
+// `spin = { grid, cells }`: the full settled grid (canonical) plus the
+// precomputed bonus-symbol cells, so a feature can trigger on anything
 // (see features/holdAndWin.js, the first plug-in). The orchestrator
 // (main.js) asks the registry which feature fired and dispatches to the
 // matching renderer by id; the math harness (slotmath.js) imports a
@@ -35,11 +37,11 @@ export function listFeatures() {
   return [...features];
 }
 
-// First registered feature whose trigger fires on this spin's cells.
+// First registered feature whose trigger fires on this spin.
 // Returns { feature, payload } or null.
-export function findTriggered(cells, model) {
+export function findTriggered(spin, model) {
   for (const feature of features) {
-    const payload = feature.checkTrigger(cells, model);
+    const payload = feature.checkTrigger(spin, model);
     if (payload) return { feature, payload };
   }
   return null;

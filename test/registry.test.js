@@ -17,21 +17,26 @@ import { mulberry32 } from './helpers/seededRng.js';
 
 const model = defaultModel();
 const cells = (n) => Array.from({ length: n }, (_, i) => ({ reel: 0, row: i }));
+// a plausible settled grid for the spin envelope (contents irrelevant to
+// holdAndWin's rule, but the contract always provides it)
+const grid = () =>
+  Array.from({ length: model.reels }, () => Array.from({ length: model.rows }, () => 'lemon'));
+const spin = (n) => ({ grid: grid(), cells: cells(n) });
 
 describe('checkTrigger (the one trigger rule)', () => {
   it('fires at exactly triggerCount cells, not below', () => {
     const t = model.bonus.triggerCount;
-    expect(checkTrigger(cells(t - 1), model)).toBeNull();
-    expect(checkTrigger(cells(t), model)).toEqual({ cells: cells(t) });
-    expect(checkTrigger(cells(t + 1), model)).not.toBeNull();
+    expect(checkTrigger(spin(t - 1), model)).toBeNull();
+    expect(checkTrigger(spin(t), model)).toEqual({ cells: cells(t) });
+    expect(checkTrigger(spin(t + 1), model)).not.toBeNull();
   });
 
   it('passes the SAME cells array through as the bonus seed', () => {
     const c = cells(model.bonus.triggerCount);
-    expect(checkTrigger(c, model).cells).toBe(c);
+    expect(checkTrigger({ grid: grid(), cells: c }, model).cells).toBe(c);
   });
 
-  it('consumes no rng (trigger decisions are deterministic from the grid)', () => {
+  it('consumes no rng (trigger decisions are deterministic from the spin)', () => {
     // checkTrigger has no rng parameter; this pins the contract shape
     expect(checkTrigger.length).toBe(2);
   });
@@ -48,7 +53,7 @@ describe('registry', () => {
     for (let n = 0; n < 500; n++) {
       const count = Math.floor(rng() * 10); // 0..9 coins
       const c = cells(count);
-      const hit = findTriggered(c, model);
+      const hit = findTriggered({ grid: grid(), cells: c }, model);
       const oldRule = count >= model.bonus.triggerCount; // pre-registry main.js
       expect(hit !== null).toBe(oldRule);
       if (hit) {
