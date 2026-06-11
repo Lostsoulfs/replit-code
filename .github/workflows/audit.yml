@@ -9,6 +9,12 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# Serialize per ref: two audit runs racing on the same branch could both try to
+# push auto-fix commits; the superseded run is cancelled instead.
+concurrency:
+  group: audit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write # push safe auto-fixes back to the PR branch
   pull-requests: write # post the audit report comment
@@ -49,4 +55,5 @@ jobs:
       - name: Post audit report comment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file audit-report.md
+          PR_NUMBER: ${{ github.event.pull_request.number }} # via env (same injection posture)
+        run: gh pr comment "$PR_NUMBER" --body-file audit-report.md
