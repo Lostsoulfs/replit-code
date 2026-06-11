@@ -14,7 +14,9 @@
 
 import { AUDIO } from './config.js';
 
-class AudioEngine {
+// Exported for unit tests (test/audio-mix.test.js); the game uses the
+// `audio` singleton below.
+export class AudioEngine {
   constructor() {
     this.ctx = null;
     this.master = null;
@@ -47,15 +49,25 @@ class AudioEngine {
     if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
   }
 
+  // Click-free master ramp: an instantaneous gain jump pops audibly; a ~15ms
+  // setTargetAtTime decay reads as immediate to the ear without the click
+  // (MDN Web Audio best practices).
+  _rampMaster(target) {
+    if (!this.master) return;
+    const t = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(t);
+    this.master.gain.setTargetAtTime(target, t, 0.015);
+  }
+
   // Master volume 0..1. Independent of mute: unmuting restores this level.
   setVolume(v) {
     this.volume = Math.max(0, Math.min(1, v));
-    if (this.master && !this.muted) this.master.gain.value = this.volume;
+    if (!this.muted) this._rampMaster(this.volume);
   }
 
   setMuted(m) {
     this.muted = m;
-    if (this.master) this.master.gain.value = m ? 0 : this.volume;
+    this._rampMaster(m ? 0 : this.volume);
   }
 
   _now() {

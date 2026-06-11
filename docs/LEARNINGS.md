@@ -38,6 +38,20 @@ something.** Include the date and enough context to be useful later.
     master=0, volume restores. Bonus-gated unease (`src/unease.js`) decorates
     the Hold & Win animation timeline ONLY — it never reads/writes the ledger
     (the money seam stays load-bearing; the 12M RTP pin is the canary).
+  - **#23 audit fold-ins (Scott-gated, + web-sourced updates).** (1) An
+    instantaneous `gain.value` jump on mute/volume pops audibly — replaced with
+    `setTargetAtTime(target, t, 0.015)` (~15ms reads as immediate without the
+    click; MDN Web Audio best practices). The `0.0001` floor on exponential
+    ramps was already right — exponentialRamp mathematically can't reach 0.
+    (2) **Pixi v8 drags need `globalpointermove`** — plain `pointermove` on the
+    stage only fires while the pointer is over an interactive object, so a fast
+    drag off the knob would stall; the slider now attaches `globalpointermove`
+    - `pointerup` on drag-start and removes them on drag-end (no lingering
+      stage listeners). (3) The audio mix arithmetic (mute=0, unmute restores,
+      volume-while-muted stays silent) is pure — pinned in
+      `test/audio-mix.test.js` with a stub gain node (same trick as persist:
+      export the class, stub the boundary). 118 tests; RTP pin + smoke 8/8
+      unchanged.
   - **verify.mjs browser**: the full Chrome build auto-requests `/favicon.ico`
     (404 → a console error that fails the smoke); CI's headless shell doesn't.
     Added an optional `PW_CHROMIUM` executablePath override for local runs when

@@ -120,15 +120,22 @@ export class SettingsPanel {
       this.handlers.onVolume(t);
     };
 
-    let dragging = false;
-    knob.on('pointerdown', () => (dragging = true));
-    track.on('pointertap', apply);
+    // Pixi v8: plain `pointermove` only fires while the pointer is over an
+    // interactive object — drags must use `globalpointermove` on the stage.
+    // Listeners are attached on drag-start and removed on drag-end so nothing
+    // lingers on the stage between drags.
     const stage = this.app.stage;
-    stage.on('pointermove', (e) => {
-      if (dragging) apply(e);
+    const endDrag = () => {
+      stage.off('globalpointermove', apply);
+      stage.off('pointerup', endDrag);
+      stage.off('pointerupoutside', endDrag);
+    };
+    knob.on('pointerdown', () => {
+      stage.on('globalpointermove', apply);
+      stage.on('pointerup', endDrag);
+      stage.on('pointerupoutside', endDrag);
     });
-    stage.on('pointerup', () => (dragging = false));
-    stage.on('pointerupoutside', () => (dragging = false));
+    track.on('pointertap', apply);
 
     redraw(0.5);
   }

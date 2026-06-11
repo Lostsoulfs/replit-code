@@ -52,7 +52,7 @@ export class Cabinet {
     // structural chrome (pillars + top/bottom panels) — one Graphics we redraw
     this.chrome = new Graphics();
     this.layer.addChild(this.chrome);
-    this._dims = { W, H, pillar: 150, topH: 150, consoleY: 970, consoleH: 150 };
+    this._dims = { W, H, pillar: 150, topH: 150, consoleY: 970 };
 
     // SPOKEY marquee title
     this.title = new Text({
