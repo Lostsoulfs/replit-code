@@ -192,7 +192,13 @@ export class UI {
       glow: COLORS.coin,
     });
 
-    for (const button of [this.betMinus, this.betPlus, this.muteBtn, this.settingsBtn, this.infoBtn]) {
+    for (const button of [
+      this.betMinus,
+      this.betPlus,
+      this.muteBtn,
+      this.settingsBtn,
+      this.infoBtn,
+    ]) {
       button.setChrome({ fill: this._secondaryButtonFill(), stroke: COLORS.frameGold });
       if (button._label) button._label.style.fill = COLORS.textWhite;
     }
@@ -280,7 +286,10 @@ export class UI {
     this.root.addChild(this.autoBtn, this.muteBtn);
 
     // SETTINGS (gear) + INFO (paytable) — small icon buttons, top-right corner
-    this.settingsBtn = this._iconBtn('⚙', () => this.handlers.onSettings && this.handlers.onSettings());
+    this.settingsBtn = this._iconBtn(
+      '⚙',
+      () => this.handlers.onSettings && this.handlers.onSettings(),
+    );
     this.settingsBtn.position.set(1022, 58);
     this.infoBtn = this._iconBtn('i', () => this.handlers.onPaytable && this.handlers.onPaytable());
     this.infoBtn.position.set(936, 58);
